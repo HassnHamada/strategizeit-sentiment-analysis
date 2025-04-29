@@ -153,7 +153,7 @@ def analyze_sentiment(text: str,
     }
 
 
-def visualize_results(results: list) -> None:
+def visualize_results(results: list, title: str | None = None) -> None:
     """
     Visualizes the sentiment analysis results using a bar chart.
 
@@ -170,7 +170,7 @@ def visualize_results(results: list) -> None:
         y=embeddings[:, 1],
         color="sentiment",
         hover_data=["text", "score"],
-        title="Sentiment Analysis Scatter Plot"
+        title=title or "Sentiment Analysis Scatter Plot"
     )
     fig.show()
 
@@ -212,4 +212,4 @@ if __name__ == "__main__":
             continue
         results = [analyze_sentiment(text, classifier, args.threshold)
                    for text in sample_data]
-        visualize_results(results)
+        visualize_results(results, title=f'Sentiment Analysis with {name}')
