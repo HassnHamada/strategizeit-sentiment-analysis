@@ -36,11 +36,11 @@ This project implements a simple sentiment analysis tool using NLTK's `Sentiment
 1. Ensure you have Python 3.13.2 installed.
 2. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/sentiment-analysis-tool.git
+   git clone https://github.com/HassnHamada/strategizeit-sentiment-analysis.git
    ```
 3. Navigate to the project directory:
    ```bash
-   cd sentiment-analysis-tool
+   cd strategizeit-sentiment-analysis
    ```
 4. Start a new virtual environment:
    ```bash
@@ -66,4 +66,6 @@ This project implements a simple sentiment analysis tool using NLTK's `Sentiment
   ```bash
   brew install sentencepiece
   ```
-- One problem with `flair` is that its a binary model so it offer no way to categorize Neutral texts.
+- Problems with `flair`:
+  - It does not have a **NEUTRAL** class.
+  - The confidence is often skewed due to fine-tuning on polarized data.
