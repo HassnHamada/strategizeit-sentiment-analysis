@@ -193,19 +193,23 @@ def parser():
     parser = argparse.ArgumentParser(description='Text Sentiment Analysis')
     parser.add_argument('--model', type=str, help='Select model to use for inference',
                         choices=['flair', 'nltk', 'siebert', 'roberta'], default='roberta')
+    parser.add_argument('--threshold', type=float, default=0.2,
+                        help='Threshold value for sentiment classification')
+    parser.add_argument('--run-all', action='store_true',
+                        help='Run all models and visualize results')
     args = parser.parse_args()
     return args
 
 
 if __name__ == "__main__":
     args = parser()
-    if args.model == 'flair':
-        classifier = MyFlairSentimentClassifier()
-    elif args.model == 'nltk':
-        classifier = MySentimentIntensityAnalyzer()
-    elif args.model == 'siebert':
-        classifier = MySiEBERT()
-    elif args.model == 'roberta':
-        classifier = MyroBERTa()
-    results = [analyze_sentiment(text, classifier, .25) for text in sample_data]
-    visualize_results(results)
+    classifiers = {'flair': MyFlairSentimentClassifier(),
+                   'nltk': MySentimentIntensityAnalyzer(),
+                   'siebert': MySiEBERT(),
+                   'roberta': MyroBERTa()}
+    for name, classifier in classifiers.items():
+        if name != args.model and not args.run_all:
+            continue
+        results = [analyze_sentiment(text, classifier, args.threshold)
+                   for text in sample_data]
+        visualize_results(results)
