@@ -1,4 +1,5 @@
 import argparse
+import re
 from abc import ABC, abstractmethod
 
 import pandas as pd
@@ -31,7 +32,6 @@ class SentimentBase(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     def preprocessing(self, text: str) -> str:
         """
         Preprocesses the input text by applying necessary transformations.
@@ -45,7 +45,11 @@ class SentimentBase(ABC):
         Raises:
             NotImplementedError
         """
-        raise NotImplementedError
+        # Remove links from the text
+        text = re.sub(r'http\S+', '', text)
+        # Remove extra spaces from the text
+        text = re.sub(r'\s+', ' ', text)
+        return text
 
 
 class MySentimentIntensityAnalyzer(SentimentBase):
@@ -59,6 +63,7 @@ class MySentimentIntensityAnalyzer(SentimentBase):
         return scores['compound']
 
     def preprocessing(self, text: str) -> str:
+        text = super().preprocessing(text)
         text = text.replace("#", "")
         return text
 
@@ -76,6 +81,7 @@ class MyFlairSentimentClassifier(SentimentBase):
         return score
 
     def preprocessing(self, text: str) -> str:
+        text = super().preprocessing(text)
         return text
 
 
@@ -85,6 +91,7 @@ class MySiEBERT(SentimentBase):
                                    model="siebert/sentiment-roberta-large-english")
 
     def classify(self, text: str) -> float:
+        text = self.preprocessing(text)
         pred = self.classifier(text)
         score = pred[0]['score']\
             if pred[0]['label'] == 'POSITIVE'\
@@ -93,6 +100,7 @@ class MySiEBERT(SentimentBase):
         return score
 
     def preprocessing(self, text: str) -> str:
+        super().preprocessing(text)
         return text
 
 
@@ -103,6 +111,7 @@ class MyroBERTa(SentimentBase):
         self.model = AutoModelForSequenceClassification.from_pretrained(MODEL)
 
     def classify(self, text: str) -> float:
+        text = self.preprocessing(text)
         encoded_input = self.tokenizer(text, return_tensors='pt')
         output = self.model(**encoded_input)
         scores = output[0][0].detach().numpy()
@@ -112,6 +121,7 @@ class MyroBERTa(SentimentBase):
         return score
 
     def preprocessing(self, text: str) -> str:
+        super().preprocessing(text)
         return text
 
 

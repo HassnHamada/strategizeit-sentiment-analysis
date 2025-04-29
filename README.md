@@ -21,7 +21,11 @@ The tool processes customer feedback and classifies the sentiment of each text a
 
 ## Preprocessing Steps
 
-TODO
+No heavy preprocessing is required, as all the models are trained on English text and designed to take in text as-is.
+1. Remove links.
+2. Remove extra spaces.
+
+In case of `MySentimentIntensityAnalyzer` also remove hashtags as the model ignores them.
 
 ## Limitations
 
