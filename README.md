@@ -54,4 +54,16 @@ This project implements a simple sentiment analysis tool using NLTK's `Sentiment
    ```bash
    python sentiment_analysis.py
    ```
+   The default inference model is `nltk -> SentimentIntensityAnalyzer` to use `flair -> TextClassifier` run:
+   ```bash
+   python sentiment_analysis.py --model flair
+   ```
 7. Enjoy
+
+## Note
+
+- If you are on MacOS, you may need to install the `sentencepiece` package.
+  ```bash
+  brew install sentencepiece
+  ```
+- One problem with `flair` is that its a binary model so it offer no way to categorize Neutral texts.
