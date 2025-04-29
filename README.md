@@ -14,7 +14,7 @@ The tool processes customer feedback and classifies the sentiment of each text a
 1. **Classification Logic**:
    - A score is calculated for each text between -1 (most negative) and 1 (most positive).
    - Thresholds are applied to classify the sentiment.
-3. **Visualisation**:
+2. **Visualisation**:
    - Convert the text to vector embeddings using [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2).
    - Use PCA to reduce the dimensionality of the embeddings to 2 dimensions.
    - Use Plotly to create an interactive scatter plot.
@@ -50,11 +50,15 @@ TODO
    ```bash
    python -m venv .venv
    ```
-5. Install dependencies:
+5. Activate the virtual environment:
+   ```bash
+   source .venv/bin/activate
+   ```
+6. Install dependencies:
    ```bash
    pip install -r requirement.txt
    ```
-6. Run the script:
+7. Run the script:
    ```bash
    python sentiment_analysis.py
    ```
