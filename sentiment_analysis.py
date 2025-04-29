@@ -25,6 +25,7 @@ class SentimentBase(ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
     def preprocessing(self, text: str) -> str:
         """
         Preprocesses the input text by applying necessary transformations.
