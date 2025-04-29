@@ -2,12 +2,16 @@
 
 ## Overview
 
-This project implements a simple sentiment analysis tool using NLTK's `SentimentIntensityAnalyzer`. The tool processes customer feedback and classifies the sentiment of each text as positive, negative, or neutral. Additionally, it provides confidence scores for each classification and visualises them in an interactive window.
+This project implements a simple sentiment analysis tool using different methods:
+- NLTK's [`SentimentIntensityAnalyzer`](https://www.nltk.org/api/nltk.sentiment.SentimentIntensityAnalyzer.html)
+- Flair's `TextClassifier`
+- [`SiEBERT`](https://huggingface.co/siebert/sentiment-roberta-large-english)
+- [`roBERTa`](https://huggingface.co/cardiffnlp/twitter-roberta-base-sentiment)
 
+The tool processes customer feedback and classifies the sentiment of each text as **POSITIVE**, **NEGATIVE**, or **NEUTRAL**. Additionally, it provides confidence scores for each classification and visualises them in an interactive window.
 ## Approach
 
-1. **Library Used**: The `SentimentIntensityAnalyzer` from NLTK's VADER is used. VADER is a pre-trained model specifically designed for sentiment analysis of text.
-2. **Classification Logic**:
+1. **Classification Logic**:
    - A score is calculated for each text between -1 (most negative) and 1 (most positive).
    - Thresholds are applied to classify the sentiment.
 3. **Visualisation**:
@@ -17,7 +21,7 @@ This project implements a simple sentiment analysis tool using NLTK's `Sentiment
 
 ## Preprocessing Steps
 
-- The only preprocessing needed is to replace hashtags because they are considered as neutral as mentioned [here](https://www.nltk.org/api/nltk.sentiment.vader.html). VADER is designed to handle raw text.
+TODO
 
 ## Limitations
 
@@ -27,7 +31,7 @@ This project implements a simple sentiment analysis tool using NLTK's `Sentiment
 ## Potential Improvements
 
 1. **Custom Training**: Train a custom sentiment analysis model on domain-specific data.
-2. **Advanced Models**: Use transformer-based models like BERT/GPT for better context understanding.
+2. **Advanced Models**: Use modern transformer-based models like GPT for better context understanding.
 3. **Services**: Use services like [AWS Comprehend](https://aws.amazon.com/comprehend/features/) for sentiment analysis.
 4. **Embeddings**: Use state-of-the-art vector embeddings like [openai](https://platform.openai.com/docs/models/text-embedding-3-large) for better visualisation.
 
@@ -54,7 +58,15 @@ This project implements a simple sentiment analysis tool using NLTK's `Sentiment
    ```bash
    python sentiment_analysis.py
    ```
-   The default inference model is `nltk -> SentimentIntensityAnalyzer` to use `flair -> TextClassifier` run:
+   The default inference model is `roberta`.
+
+   Other available options:
+      - `nltk` to use NLTK's SentimentIntensityAnalyzer
+      - `flair` to use Flair's TextClassifier
+      - `siebert` to use SiEBERT
+      - `roberta` to use roBERTa (default)
+
+   example, to use Flair:
    ```bash
    python sentiment_analysis.py --model flair
    ```
@@ -63,9 +75,10 @@ This project implements a simple sentiment analysis tool using NLTK's `Sentiment
 ## Note
 
 - If you are on MacOS, you may need to install the `sentencepiece` package.
+
   ```bash
   brew install sentencepiece
   ```
-- Problems with `flair`:
+- Problems with `flair` and `siebert`:
   - It does not have a **NEUTRAL** class.
   - The confidence is often skewed due to fine-tuning on polarized data.
