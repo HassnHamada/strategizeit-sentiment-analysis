@@ -68,9 +68,7 @@ class MyFlairSentimentClassifier(SentimentBase):
         text = self.preprocessing(text)
         sentence = Sentence(text)
         self.classifier.predict(sentence)
-        score = sentence.labels[0].score\
-            if sentence.labels[0].value == 'POSITIVE'\
-            else -sentence.labels[0].score
+        score = sentence.score if sentence.tag == 'POSITIVE' else -sentence.score
         assert -1 <= score <= 1
         return score
 
