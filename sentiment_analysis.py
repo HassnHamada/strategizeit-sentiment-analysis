@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 
 import pandas as pd
 import plotly.express as px
+from flair.data import Sentence
+from flair.models import TextClassifier
 from nltk.sentiment import SentimentIntensityAnalyzer
 from sentence_transformers import SentenceTransformer
 from sklearn.decomposition import PCA
@@ -54,6 +56,24 @@ class MySentimentIntensityAnalyzer(SentimentBase):
 
     def preprocessing(self, text: str) -> str:
         text = text.replace("#", "")
+        return text
+
+
+class MyFlairSentimentClassifier(SentimentBase):
+    def __init__(self):
+        self.classifier = TextClassifier.load('en-sentiment')
+
+    def classify(self, text: str) -> float:
+        text = self.preprocessing(text)
+        sentence = Sentence(text)
+        self.classifier.predict(sentence)
+        score = sentence.labels[0].score\
+            if sentence.labels[0].value == 'POSITIVE'\
+            else -sentence.labels[0].score
+        assert -1 <= score <= 1
+        return score
+
+    def preprocessing(self, text: str) -> str:
         return text
 
 
@@ -122,5 +142,8 @@ sample_data = [
 
 if __name__ == "__main__":
     classifier = MySentimentIntensityAnalyzer()
+    results = [analyze_sentiment(text, classifier) for text in sample_data]
+    visualize_results(results)
+    classifier = MyFlairSentimentClassifier()
     results = [analyze_sentiment(text, classifier) for text in sample_data]
     visualize_results(results)
