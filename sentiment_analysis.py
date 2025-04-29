@@ -6,8 +6,11 @@ import plotly.express as px
 from flair.data import Sentence
 from flair.models import TextClassifier
 from nltk.sentiment import SentimentIntensityAnalyzer
+from scipy.special import softmax
 from sentence_transformers import SentenceTransformer
 from sklearn.decomposition import PCA
+from transformers import (AutoModelForSequenceClassification, AutoTokenizer,
+                          pipeline)
 
 
 class SentimentBase(ABC):
@@ -69,6 +72,42 @@ class MyFlairSentimentClassifier(SentimentBase):
         sentence = Sentence(text)
         self.classifier.predict(sentence)
         score = sentence.score if sentence.tag == 'POSITIVE' else -sentence.score
+        assert -1 <= score <= 1
+        return score
+
+    def preprocessing(self, text: str) -> str:
+        return text
+
+
+class MySiEBERT(SentimentBase):
+    def __init__(self):
+        self.classifier = pipeline("sentiment-analysis",
+                                   model="siebert/sentiment-roberta-large-english")
+
+    def classify(self, text: str) -> float:
+        pred = self.classifier(text)
+        score = pred[0]['score']\
+            if pred[0]['label'] == 'POSITIVE'\
+            else -pred[0]['score']
+        assert -1 <= score <= 1
+        return score
+
+    def preprocessing(self, text: str) -> str:
+        return text
+
+
+class MyroBERTa(SentimentBase):
+    def __init__(self):
+        MODEL = f"cardiffnlp/twitter-roberta-base-sentiment"
+        self.tokenizer = AutoTokenizer.from_pretrained(MODEL)
+        self.model = AutoModelForSequenceClassification.from_pretrained(MODEL)
+
+    def classify(self, text: str) -> float:
+        encoded_input = self.tokenizer(text, return_tensors='pt')
+        output = self.model(**encoded_input)
+        scores = output[0][0].detach().numpy()
+        scores = softmax(scores)
+        score = scores[2] - scores[0]
         assert -1 <= score <= 1
         return score
 
@@ -143,7 +182,7 @@ sample_data = [
 def parser():
     parser = argparse.ArgumentParser(description='Text Sentiment Analysis')
     parser.add_argument('--model', type=str, help='Select model to use for inference',
-                        choices=['flair', 'nltk'], default='nltk')
+                        choices=['flair', 'nltk', 'siebert', 'roberta'], default='roberta')
     args = parser.parse_args()
     return args
 
@@ -152,7 +191,11 @@ if __name__ == "__main__":
     args = parser()
     if args.model == 'flair':
         classifier = MyFlairSentimentClassifier()
-    else:
+    elif args.model == 'nltk':
         classifier = MySentimentIntensityAnalyzer()
-    results = [analyze_sentiment(text, classifier) for text in sample_data]
+    elif args.model == 'siebert':
+        classifier = MySiEBERT()
+    elif args.model == 'roberta':
+        classifier = MyroBERTa()
+    results = [analyze_sentiment(text, classifier, .2) for text in sample_data]
     visualize_results(results)
