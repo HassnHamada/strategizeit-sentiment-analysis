@@ -107,7 +107,7 @@ class MyroBERTa(SentimentBase):
         output = self.model(**encoded_input)
         scores = output[0][0].detach().numpy()
         scores = softmax(scores)
-        score = scores[2] - scores[0]
+        score = (scores[2] - scores[0]) * (1 - scores[1])
         assert -1 <= score <= 1
         return score
 
@@ -197,5 +197,5 @@ if __name__ == "__main__":
         classifier = MySiEBERT()
     elif args.model == 'roberta':
         classifier = MyroBERTa()
-    results = [analyze_sentiment(text, classifier, .2) for text in sample_data]
+    results = [analyze_sentiment(text, classifier, .25) for text in sample_data]
     visualize_results(results)
