@@ -1,3 +1,4 @@
+import argparse
 from abc import ABC, abstractmethod
 
 import pandas as pd
@@ -140,10 +141,20 @@ sample_data = [
     "Completely disappointed with the quality."  # Negative
 ]
 
+
+def parser():
+    parser = argparse.ArgumentParser(description='Text Sentiment Analysis')
+    parser.add_argument('--model', type=str, help='Select model to use for inference',
+                        choices=['flair', 'nltk'], default='nltk')
+    args = parser.parse_args()
+    return args
+
+
 if __name__ == "__main__":
-    classifier = MySentimentIntensityAnalyzer()
-    results = [analyze_sentiment(text, classifier) for text in sample_data]
-    visualize_results(results)
-    classifier = MyFlairSentimentClassifier()
+    args = parser()
+    if args.model == 'flair':
+        classifier = MyFlairSentimentClassifier()
+    else:
+        classifier = MySentimentIntensityAnalyzer()
     results = [analyze_sentiment(text, classifier) for text in sample_data]
     visualize_results(results)
